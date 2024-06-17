@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dummy-mongo
+  labels:
+    app: dummy-mongo
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: dummy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: dummy
+    spec:
+      terminationGracePeriodSeconds: 5
+      containers:
+        - name: dummy
+          image: docker.io/karthik3030/kedadummyserver:latest
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - pkill -f "sleep"
+

@@ -1,0 +1,29 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: app-redis
+spec:
+  scaleTargetRef:
+    name: "app-redis"
+  pollingInterval:  3
+  cooldownPeriod:   3
+  idleReplicaCount: 0
+  minReplicaCount:  1
+  maxReplicaCount:  100
+#  fallback:
+#    failureThreshold: 3
+#    replicas: 6
+  advanced:
+    restoreToOriginalReplicaCount: false
+  triggers:
+
+    - type: redis
+      metadata:
+        address: redis-master.default.svc:6379
+        listName: mylist
+        listLength: "1"
+        activationListLength: "1"
+        enableTLS: "false"
+#        databaseIndex: "0"
+      authenticationRef:
+        name: app-redis

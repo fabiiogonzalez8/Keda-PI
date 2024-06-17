@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secreto-consumidor-rabbitmq
+data:
+  RabbitMqHost: YW1xcDovL3VzZXI6UEFTU1dPUkRAcmFiYml0bXEuZGVmYXVsdC5zdmMuY2x1c3Rlci5sb2NhbDo1Njcy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumidor-rabbitmq
+  namespace: default
+  labels:
+    app: consumidor-rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: consumidor-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: consumidor-rabbitmq
+    spec:
+      containers:
+        - name: consumidor-rabbitmq
+          image: ghcr.io/kedacore/rabbitmq-client:v1.0
+          imagePullPolicy: Always
+          command:
+            - receive  # Comando para recibir mensajes
+          args:
+            - "amqp://user:PASSWORD@rabbitmq.default.svc.cluster.local:5672"  # URL de conexión a RabbitMQ
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: consumidor-rabbitmq
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: consumidor-rabbitmq  # Referencia al despliegue del consumidor
+  pollingInterval: 5
+  cooldownPeriod: 30
+  maxReplicaCount: 30
+  triggers:
+    - type: rabbitmq
+      metadata:
+        queueName: hello  # Nombre de la cola de RabbitMQ
+        queueLength: "5"  # Longitud de la cola para activar el escalado
+      authenticationRef:
+        name: autenticacion-consumidor-rabbitmq
+---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: autenticacion-consumidor-rabbitmq
+  namespace: default
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: secreto-consumidor-rabbitmq
+      key: RabbitMqHost
+---
+
