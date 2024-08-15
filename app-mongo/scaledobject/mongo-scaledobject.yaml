@@ -6,7 +6,7 @@ metadata:
   labels:
     deploymentName: dummy-mongo
 spec:
-  maxReplicaCount: 7
+  maxReplicaCount: 12
   pollingInterval: 5
   cooldownPeriod:  5
   scaleTargetRef:

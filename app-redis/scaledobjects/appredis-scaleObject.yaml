@@ -21,8 +21,8 @@ spec:
       metadata:
         address: redis-master.default.svc:6379
         listName: mylist
-        listLength: "1"
-        activationListLength: "1"
+        listLength: "3"
+        activationListLength: "3"
         enableTLS: "false"
 #        databaseIndex: "0"
       authenticationRef:

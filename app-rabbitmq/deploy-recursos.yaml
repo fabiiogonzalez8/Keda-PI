@@ -26,7 +26,7 @@ spec:
           image: ghcr.io/kedacore/rabbitmq-client:v1.0
           imagePullPolicy: Always
           command:
-            - receive  # Comando para recibir mensajes
+            - receive  #Coomando para recibir mensajes
           args:
             - "amqp://user:PASSWORD@rabbitmq.default.svc.cluster.local:5672"  # URL de conexión a RabbitMQ
 ---
@@ -37,14 +37,14 @@ metadata:
   namespace: default
 spec:
   scaleTargetRef:
-    name: consumidor-rabbitmq  # Referencia al despliegue del consumidor
+    name: consumidor-rabbitmq
   pollingInterval: 5
   cooldownPeriod: 30
-  maxReplicaCount: 30
+  maxReplicaCount: 20
   triggers:
     - type: rabbitmq
       metadata:
-        queueName: hello  # Nombre de la cola de RabbitMQ
+        queueName: hello  #Nombre de la cola de RabbitMQ
         queueLength: "5"  # Longitud de la cola para activar el escalado
       authenticationRef:
         name: autenticacion-consumidor-rabbitmq
